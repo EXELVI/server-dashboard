@@ -1,0 +1,245 @@
+{
+  "common": {
+    "loading": "Caricamento...",
+    "loadingSystemData": "Caricamento dati di sistema...",
+    "noData": "Nessun dato disponibile",
+    "hostname": "NOME HOST:",
+    "online": "ONLINE",
+    "offline": "OFFLINE",
+    "close": "Chiudi",
+    "cancel": "Annulla",
+    "confirm": "Conferma",
+    "update": "Aggiorna",
+    "updating": "Aggiornamento in corso..."
+  },
+  "header": {
+    "server": "SERVER",
+    "dashboard": "DASHBOARD",
+    "demo": "DEMO"
+  },
+  "page": {
+    "cacheClearing": "Pulisco cache RAM...",
+    "cacheClearingError": "Errore nel pulire la cache RAM",
+    "cacheCleared": "Cache RAM pulita",
+    "cacheClearedDemo": "Cache RAM pulita (modalità demo)",
+    "updatingData": "Aggiorno i dati...",
+    "dataUpdated": "Dati aggiornati",
+    "updateFailed": "Aggiornamento fallito",
+    "cards": {
+      "cpu": "CPU",
+      "memory": "Memoria",
+      "storage": "Archiviazione",
+      "sensors": "Sensori",
+      "envSensors": "Sensori ambientali",
+      "commands": "Comandi"
+    }
+  },
+  "commands": {
+    "scanMenu": "Menu Scansione",
+    "refreshData": "Aggiorna dati",
+    "openLogs": "Apri log",
+    "processes": "Processi",
+    "clearCache": "Pulisci cache RAM"
+  },
+  "timeDisplay": {
+    "lastDataUpdate": "Ultimo aggiornamento dati:"
+  },
+  "cpu": {
+    "user": "Utente",
+    "system": "Sistema",
+    "idle": "Inattivo",
+    "cpuUsage": "Utilizzo CPU",
+    "loadAvg": "CARICO MEDIO",
+    "total": "Totale"
+  },
+  "memory": {
+    "loading": "Caricamento dati memoria...",
+    "empty": "Nessun dato memoria disponibile.",
+    "labels": {
+      "ram": "RAM",
+      "cache": "Cache",
+      "swap": "Swap",
+      "used": "Usata",
+      "free": "Libera",
+      "of": "di"
+    }
+  },
+  "disk": {
+    "loading": "Caricamento dati disco...",
+    "empty": "Nessun dato disco disponibile",
+    "system": "Disco di sistema",
+    "storage": "Disco di archiviazione",
+    "noSystem": "Nessun dato disco di sistema disponibile",
+    "noStorage": "Nessun dato disco di archiviazione disponibile",
+    "used": "Usato",
+    "available": "Disponibile",
+    "total": "Totale",
+    "filesystem": "File system",
+    "mountPoint": "Punto di mount",
+    "ioStatus": "Stato I/O",
+    "health": "Salute",
+    "unknown": "SCONOSCIUTO"
+  },
+  "sensorData": {
+    "loading": "Caricamento dati sensori...",
+    "empty": "Nessun dato sensori disponibile.",
+    "cpuCores": "Core CPU",
+    "systemComponents": "Componenti di sistema"
+  },
+  "sensorTable": {
+    "loading": "Caricamento dati sensori...",
+    "empty": "Nessun dato disponibile",
+    "temperature": "Temperatura",
+    "humidity": "Umidità",
+    "pressure": "Pressione",
+    "airQuality": "Qualità dell'aria",
+    "average": "Media:",
+    "min": "Min:",
+    "max": "Max:",
+    "lastUpdate": "Ultimo aggiornamento:",
+    "device": "Dispositivo:"
+  },
+  "logDialog": {
+    "title": "Log di sistema",
+    "selectPlaceholder": "Seleziona un log",
+    "reload": "Ricarica",
+    "loading": "Caricamento log...",
+    "noLines": "Nessuna riga disponibile per questo log.",
+    "pathLabel": "Percorso:",
+    "updatedAt": "Aggiornato alle {time}",
+    "linesCount": "{count} righe",
+    "fetchError": "Errore nel recuperare i log: {status}",
+    "unknownError": "Errore sconosciuto durante il recupero dei log.",
+    "options": {
+      "next": {
+        "label": "Server next (combinato)",
+        "description": "Output combinato del server Next.js (stdout e stderr)"
+      },
+      "nextOut": {
+        "label": "Next stdout",
+        "description": "Output standard del server Next.js"
+      },
+      "nextErr": {
+        "label": "Next stderr",
+        "description": "Output errori del server Next.js"
+      },
+      "ssh": {
+        "label": "Accesso SSH",
+        "description": "Log di accesso SSH dal sistema"
+      },
+      "xorg": {
+        "label": "Server Xorg",
+        "description": "Output del server Xorg"
+      }
+    }
+  },
+  "processDialog": {
+    "title": "Processi",
+    "description": "Lista dei processi ordinati per utilizzo CPU.",
+    "placeholder": "Filtra per comando o PID...",
+    "updating": "Aggiornamento in corso...",
+    "update": "Aggiorna",
+    "badgePrefix": "Top",
+    "badgeBy": "da",
+    "pid": "PID",
+    "ppid": "PPID",
+    "cpuPercent": "CPU %",
+    "memPercent": "MEM %",
+    "elapsedTime": "Tempo trascorso",
+    "command": "Comando",
+    "loading": "Caricamento processi...",
+    "empty": "Nessun processo trovato corrispondente al filtro.",
+    "updatedAt": "Aggiornato alle {time}"
+  },
+  "demoEmailModal": {
+    "title": "Email Demo",
+    "description": "Anteprima di un'email scansionata dal Servizio Scanner.",
+    "fromName": "Servizio Scanner",
+    "scannedImage": "Immagine scansionata:",
+    "to": "A:",
+    "inbox": "Posta in arrivo",
+    "openInNewTab": "Apri in una nuova scheda",
+    "close": "Chiudi",
+    "attachments": "Allegati",
+    "attachmentsCount": "({count})",
+    "open": "Apri",
+    "download": "Scarica",
+    "iframeTitle": "Anteprima email Scanner"
+  },
+  "scanMenu": {
+    "title": "Menu Scansione",
+    "demoActive": "La demo è attiva, la scansione genera un documento falso.",
+    "availableCommands": "Comandi disponibili:",
+    "scanning": "Scansione in corso...",
+    "startScan": "Avvia scansione",
+    "startDemoScan": "Avvia demo scansione",
+    "closeMenu": "Chiudi menu",
+    "sendEmailQr": "Invia Email / QRcode",
+    "fullscreenHint": "Schermo intero",
+    "ready": "Pronto per la scansione",
+    "scanStatus": "{status}",
+    "scannedDocumentAlt": "Documento scansionato"
+  },
+  "shareScan": {
+    "title": "Condividi Scansione",
+    "demoTitle": "Demo",
+    "demoDescription": "Invio email e QR sono simulati: il file di esempio non è una scansione reale.",
+    "noteTitle": "Nota importante",
+    "noteDescription": "Devi essere connesso a",
+    "noteDescriptionSuffix": "per accedere al file.",
+    "emailUrl": "Invia URL via Email",
+    "emailImage": "Invia Immagine via Email",
+    "sending": "Invio in corso...",
+    "closeHint": "Premi",
+    "closeHintKey": "D",
+    "closeHintSuffix": "per chiudere",
+    "qrAlt": "QR Code"
+  },
+  "emailDialog": {
+    "title": "Inserisci Email",
+    "description": "A quale email vuoi inviare?",
+    "placeholder": "your.email@example.com",
+    "cancel": "Annulla",
+    "send": "Invia",
+    "sending": "Invio in corso..."
+  },
+  "emailConfirm": {
+    "title": "Conferma Email",
+    "description": "L'email {email} non è riconosciuta. Vuoi procedere comunque?",
+    "cancel": "Annulla",
+    "confirm": "Conferma"
+  },
+  "scanner": {
+    "demoConnecting": "Demo: connessione al socket...",
+    "demoConnected": "Demo: socket connesso. Avvio scansione...",
+    "demoCapturing": "Demo: acquisizione pagina 1/1...",
+    "demoProcessing": "Demo: elaborazione immagine...",
+    "demoCompleted": "Demo: scansione completata! File salvato come demo-scan.png",
+    "demoError": "Demo: errore nella generazione dell'immagine",
+    "connecting": "Connessione al socket...",
+    "connectionError": "Errore di connessione al server.",
+    "socketConnected": "Socket connesso. Avvio scansione...",
+    "scanCompleted": "Scansione completata! File salvato come {fileName}",
+    "scanError": "Errore durante la scansione: {error}",
+    "invalidResponse": "Errore: risposta socket non valida.",
+    "socketError": "Errore socket. Controlla la connessione.",
+    "noFile": "Nessun file da condividere. Esegui prima una scansione.",
+    "demoEmailDisabled": "Demo: invio email disabilitato in modalità demo.",
+    "emailUrlSuccess": "URL inviato via email con successo!",
+    "emailImageSuccess": "Immagine inviata via email con successo!",
+    "emailError": "Errore durante l'invio dell'email",
+    "connectionErrorEmail": "Errore di connessione",
+    "qrGenerationError": "Errore nella generazione del QR code.",
+    "demoCanvas": {
+      "title": "SCANSIONE DEMO",
+      "subtitle": "Anteprima generata localmente",
+      "status": "Stato: completato",
+      "file": "File: demo-scan.png",
+      "mode": "Modalità: MOCK",
+      "generated": "Generato: {date}",
+      "infoLine1": "Usa Condividi/Email per provare i flussi.",
+      "infoLine2": "Lo stesso percorso socket è emulato.",
+      "preview": "[ ANTEPRIMA CANVAS ]"
+    }
+  }
+}
