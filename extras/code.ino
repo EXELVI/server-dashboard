@@ -7,6 +7,7 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <WebSocketsClient.h>
 
 #define RLOAD 10.0  // MQ-135 load resistance in kilo ohms
 #define RZERO 76.63 // Average value (should be calibrated for each sensor)
@@ -50,6 +51,28 @@ const unsigned long WIFI_RETRY_INTERVAL = 60000; // 60 seconds
 bool wifiConnected = false;
 int connectionAttempts = 0;
 
+// MARK: - WebSocket Client
+WebSocketsClient webSocket;
+
+const char *WS_HOST = "192.168.1.6"; // your dashboard server IP address
+const uint16_t WS_PORT = 3134; // match ws server port 
+const char *WS_PATH = "/api/socket";
+
+void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
+{
+  switch (type)
+  {
+  case WStype_DISCONNECTED:
+    Serial.println("WebSocket Disconnected!");
+    break;
+  case WStype_CONNECTED:
+    Serial.println("WebSocket Connected!");
+    break;
+  case WStype_TEXT:
+    Serial.printf("WebSocket Message: %s\n", payload);
+    break;
+  }
+}
 // MARK: - Display Status
 void displayStatus(const char *message, uint16_t color, bool lineBreak = true)
 {
@@ -147,6 +170,8 @@ void readSensors()
   airQuality = ppm;
 
   Serial.printf("Temp: %.2f C, Humidity: %.2f %%, Pressure: %.2f hPa, Air Quality: %.2f PPM\n", temperature, humidity, pressure, airQuality);
+
+  sendDataViaWebSocket();
 }
 
 // MARK: - Format Uptime
@@ -285,6 +310,10 @@ void setup()
 
   connectToWiFi();
 
+  webSocket.begin(WS_HOST, WS_PORT, WS_PATH);
+  webSocket.onEvent(webSocketEvent);
+  webSocket.setReconnectInterval(5000); // Try to reconnect every 5 seconds
+
   Serial.println("Setup complete.");
   displayStatus("Setup Complete", TFT_GREEN);
   delay(1000);
@@ -339,9 +368,38 @@ void sendDataToServer()
   http.end();
 }
 
+void sendDataViaWebSocket()
+{
+  if (wifiConnected)
+  {
+    if (!webSocket.isConnected())
+    {
+      return;
+    }
+
+    StaticJsonDocument<200> doc;
+    doc["deviceId"] = deviceId;
+    doc["timestamp"] = millis();
+    doc["temperature"] = round(temperature * 100.0) / 100.0;
+    doc["humidity"] = round(humidity * 100.0) / 100.0;
+    doc["pressure"] = round(pressure * 100.0) / 100.0;
+    doc["airQuality"] = round(airQuality * 100.0) / 100.0;
+
+    String jsonString;
+    serializeJson(doc, jsonString);
+
+    webSocket.sendTXT(jsonString);
+
+    Serial.println("[WS] Sent:");
+    Serial.println(jsonString);
+  }
+}
+
 // MARK: - Loop
 void loop()
 {
+  webSocket.loop();
+
   unsigned long currentMillis = millis();
 
   if (WiFi.status() != WL_CONNECTED)

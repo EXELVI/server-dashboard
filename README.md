@@ -1,4 +1,4 @@
-# 🖥️  Server Dashboard
+# 🖥️ Server Dashboard
 
 A complete and modern web dashboard for real-time monitoring of server performance
 
@@ -7,19 +7,19 @@ A complete and modern web dashboard for real-time monitoring of server performan
 
 ## ✨ Main Features
 
-- todo
+-  todo
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js v24.x or higher
-- pnpm (recommended) or npm
-- PM2 (optional, for production deployment)
+-  Node.js v24.x or higher
+-  pnpm (recommended) or npm
+-  PM2 (optional, for production deployment)
 
 ### Hardware Requirements (Optional)
-- A monitor/display for kiosk mode
-- Hardware sensors support (for temperature/fan monitoring, I used an esp32 with an ATH20 + BMP280)
+
+-  Hardware sensors support (for temperature/fan monitoring, I used an esp32 with an ATH20 + BMP280) + MQ-125 gas sensor
 
 ### Installation
 
@@ -37,11 +37,22 @@ pnpm build
 # Start the server with pm2
 pm2 start ecosystem.config.js
 
+# Start the websocket for the environment sensors (optional)
+pm2 start pnpm --name sensor-ws -- tsx sensors-ws-server.ts
+
+# Save the pm2 process list and configure it to start on boot
+pm2 save
+
 # Or start in development mode
 pnpm dev
 ```
 
 The application will be available at [http://localhost:3000](http://localhost:3000)
+
+## Environment Sensors Setup 
+To monitor hardware sensors like temperature, humidity, and gas levels, you can use an ESP32 microcontroller with appropriate sensors (e.g., ATH20 for temperature/humidity, BMP280 for pressure, MQ-125 for gas detection).
+
+You can find the Arduino code and PlatformIO configuration in the `extras/code.ino` directory.
 
 ## 🖥️ Kiosk Mode
 
@@ -51,11 +62,13 @@ Run the application in full-screen kiosk mode on a dedicated monitor, perfect fo
 > This setup has been tested on Ubuntu Server
 
 ### Requirements
-- A monitor connected to your server
-- Chromium or Firefox browser with kiosk mode support
-- A minimal window manager (like Openbox)
 
-### 1. Install the necessary packages: 
+-  A monitor connected to your server
+-  Chromium or Firefox browser with kiosk mode support
+-  A minimal window manager (like Openbox)
+
+### 1. Install the necessary packages:
+
 ```bash
 sudo apt update
 sudo apt install --no-install-recommends \
@@ -63,16 +76,20 @@ sudo apt install --no-install-recommends \
 ```
 
 ### 2. Create a dedicated user for the kiosk:
+
 ```bash
 sudo adduser kiosk
 sudo usermod -aG audio,video,tty,dialout kiosk
-``` 
+```
 
 ### 3. Create an `.xinitrc` file in the kiosk user's home directory:
+
 ```bash
 nano /home/kiosk/.xinitrc
 ```
+
 Add the following lines:
+
 ```bash
 #!/bin/bash
 
@@ -94,17 +111,22 @@ chromium-browser \
 ```
 
 ### 4. Make the `.xinitrc` file executable:
+
 ```bash
 chmod +x /home/kiosk/.xinitrc
 ```
 
 ### 5. Automated login on TTY1
+
 Edit the getty service for TTY1:
+
 ```bash
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 sudo nano /etc/systemd/system/getty@tty1.service.d/override.conf
 ```
+
 Add the following lines:
+
 ```ini
 [Service]
 ExecStart=
@@ -112,17 +134,21 @@ ExecStart=-/sbin/agetty --autologin kiosk --noclear %I $TERM
 ```
 
 ### 6. Apply the changes and enable auto-start of X on login:
+
 ```bash
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
-sudo systemctl restart getty@tty1 
+sudo systemctl restart getty@tty1
 ```
 
-### 7. Auto-start startx on login 
+### 7. Auto-start startx on login
+
 ```bash
 nano /home/kiosk/.bash_profile
 ```
+
 Add the following lines:
+
 ```bash
 if [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]]; then
   startx
@@ -130,11 +156,13 @@ fi
 ```
 
 ### 8. Reboot and verify
+
 ```bash
 sudo reboot
 ```
 
 After reboot, the system should automatically:
+
 1. Log in the kiosk user on TTY1
 2. Start the X server
 3. Launch Chromium in full-screen mode
@@ -142,11 +170,11 @@ After reboot, the system should automatically:
 
 > [!IMPORTANT]
 > Ensure your Next.js application is configured to start on boot using PM2:
+>
 > ```bash
 > pm2 startup
 > pm2 save
 > ```
-
 
 ## 📦 Available Scripts
 
@@ -172,7 +200,7 @@ kiosk/
 │   ├── components/       # Components specific to app routes
 │   │   ├── modals/       # Dialog and modals
 │   │   └── utilities/    # Utility components
-│   ├── services/         # Scan and demo service 
+│   ├── services/         # Scan and demo service
 │   └── scans/            # Scanned files route
 ├── components/           # Components used across the app
 │   ├── scanner/          # Scanner components
@@ -183,6 +211,7 @@ kiosk/
 ├── extras/               # PlatformIO configuration with Arduino code, send mail route
 └── public/               # Static files
 ```
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -216,21 +245,22 @@ When enabled, the dashboard will display simulated data for all monitoring featu
 ## 🔌 API Endpoints
 
 ### Monitoring
-- `GET /api/stats` - Fetch CPU, memory usage, and sensor data
-- `GET /api/disk` - Get disk usage information
-- `GET /api/cache` - Retrieve cached sensor data
-- `GET /api/logs` - Fetch system logs
-- `GET /api/processes` - List active processes with resource usage
+
+-  `GET /api/stats` - Fetch CPU, memory usage, and sensor data
+-  `GET /api/disk` - Get disk usage information
+-  `GET /api/cache` - Retrieve cached sensor data
+-  `GET /api/logs` - Fetch system logs
+-  `GET /api/processes` - List active processes with resource usage
 
 ### Scanner
-- `POST /api/sendMail` - Send scanned documents via email
-- `GET /scans/[file]` - Retrieve a specific scanned file
+
+-  `POST /api/sendMail` - Send scanned documents via email
+-  `GET /scans/[file]` - Retrieve a specific scanned file
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details. 
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 <div align="center">
   <strong>Built by EXELVI with ❤️</strong>
 </div>
-

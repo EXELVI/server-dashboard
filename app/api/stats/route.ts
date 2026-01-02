@@ -55,8 +55,6 @@ export async function GET() {
             }
          });
 
-         console.log(temps)
-
          resolve(
             NextResponse.json({
                loadAverage: {

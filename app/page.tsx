@@ -33,6 +33,7 @@ import { OnlineStatus } from "./components/utilities/OnlineStatus";
 import { LoadingState } from "./components/utilities/LoadingState";
 import Commands from "./components/Commands";
 import { getTranslations } from "@/lib/translations";
+import { useSensors } from "@/hooks/useSensors";
 
 const translations = getTranslations(process.env.NEXT_PUBLIC_LOCALE || undefined);
 
@@ -47,9 +48,21 @@ export default function App() {
    const [openLogDialog, setOpenLogDialog] = useState(false);
    const [openProcessDialog, setOpenProcessDialog] = useState(false);
    const pressedKeys = useRef<Set<string>>(new Set());
-
+   const [retry, setRetry] = useState(true);
+   
    const scanner = useScanner({
       mockScan: demoMode
+   });
+
+   const handleSensorDisconnect = useCallback(() => {
+      setSensorTableData((prev) => (prev ? { ...prev, isOnline: false } : prev));
+      setRetry(true);
+   }, [setRetry, setSensorTableData]);
+
+   useSensors({
+      setData: setSensorTableData,
+      onDisconnect: handleSensorDisconnect,
+      enabled: !demoMode,
    });
 
    // MARK: - Data Fetching
@@ -65,19 +78,22 @@ export default function App() {
             return;
          }
 
-         const [disk, disk4TB, stats, sensorTable] = await Promise.all([
+         const [disk, disk4TB, stats] = await Promise.all([
             fetchData("/api/disk"),
             fetchData("/api/disk?disk=/mnt/4tb"),
             fetchData("/api/stats"),
-            fetchData("https://exelvi.xyz/api/sensor/current")
          ]);
-
+  
          setDiskData(disk);
          setDiskData4TB(disk4TB);
-         setSensorTableData(sensorTable);
          setStatsData(stats);
          setLastUpdated(new Date());
          setLoading(false);
+
+          if (!sensorTableData) { 
+            const initialSensorData = await fetchData("https://exelvi.xyz/api/sensor/current")
+            setSensorTableData(initialSensorData);
+         }
       } catch (error) {
          console.error("Error fetching data:", error);
          if (!demoMode) {
@@ -85,6 +101,14 @@ export default function App() {
          }
       }
    }, [demoMode]);
+
+
+
+   useEffect(() => {
+      if (retry) {
+         updateData().then(() => setRetry(false));
+      }
+   }, [retry, updateData]);
 
    useEffect(() => {
       updateData();
