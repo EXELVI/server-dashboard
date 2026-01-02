@@ -180,6 +180,7 @@ kiosk/
 ├── hooks/                # Hooks
 ├── lib/                  # Utilities and helpers
 ├── pages/                # API Routes for scanner and JWT validation
+├── extras/               # PlatformIO configuration with Arduino code, send mail route
 └── public/               # Static files
 ```
 ## 🔧 Configuration
