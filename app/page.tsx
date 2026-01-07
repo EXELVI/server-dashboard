@@ -47,20 +47,44 @@ export default function App() {
    const [loading, setLoading] = useState(true);
    const [openLogDialog, setOpenLogDialog] = useState(false);
    const [openProcessDialog, setOpenProcessDialog] = useState(false);
-   const pressedKeys = useRef<Set<string>>(new Set());
-   const [retry, setRetry] = useState(true);
+   const pressedKeys = useRef<Set<string>>(new Set()); 
    
    const scanner = useScanner({
       mockScan: demoMode
-   });
+   }); 
+
+   const fetchSensorFallback = useCallback(async () => {
+      if (demoMode) return;
+
+      try {
+         const fallbackData = await fetchData("https://exelvi.xyz/api/sensor/current");
+         if (fallbackData?.success) {
+            setSensorTableData(fallbackData);
+         }
+      } catch (error) {
+         console.error("Error fetching fallback sensor data:", error);
+      }
+   }, [demoMode]);
+
+   const handleSensorData = useCallback(
+      (data: React.SetStateAction<SensorSnapshot | undefined>) => {
+         setSensorTableData(data);
+      },
+      []
+   );
+
+   const handleSensorConnect = useCallback(() => {
+      setSensorTableData((prev) => (prev ? { ...prev, isOnline: true } : prev));
+   }, []);
 
    const handleSensorDisconnect = useCallback(() => {
       setSensorTableData((prev) => (prev ? { ...prev, isOnline: false } : prev));
-      setRetry(true);
-   }, [setRetry, setSensorTableData]);
+      fetchSensorFallback();
+   }, [fetchSensorFallback]);
 
    useSensors({
-      setData: setSensorTableData,
+      setData: handleSensorData,
+      onConnect: handleSensorConnect,
       onDisconnect: handleSensorDisconnect,
       enabled: !demoMode,
    });
@@ -89,11 +113,6 @@ export default function App() {
          setStatsData(stats);
          setLastUpdated(new Date());
          setLoading(false);
-
-          if (!sensorTableData) { 
-            const initialSensorData = await fetchData("https://exelvi.xyz/api/sensor/current")
-            setSensorTableData(initialSensorData);
-         }
       } catch (error) {
          console.error("Error fetching data:", error);
          if (!demoMode) {
@@ -102,14 +121,7 @@ export default function App() {
       }
    }, [demoMode]);
 
-
-
-   useEffect(() => {
-      if (retry) {
-         updateData().then(() => setRetry(false));
-      }
-   }, [retry, updateData]);
-
+ 
    useEffect(() => {
       updateData();
 

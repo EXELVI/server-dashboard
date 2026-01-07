@@ -7,7 +7,14 @@ A complete and modern web dashboard for real-time monitoring of server performan
 
 ## ✨ Main Features
 
--  todo
+-  Real-time monitoring of CPU, memory, disk usage, and temperature sensors
+-  Hardware sensors integration for temperature, humidity, pressure, and gas levels
+-  Document scanner feature with email sending capability
+-  Navigate and control the dashboard with keyboard only
+-  Process monitoring with resource usage details
+-  Logs viewer 
+-  Kiosk mode for full-screen display on dedicated monitors
+-  Cache Ram usage monitoring and clearing
 
 ## 🚀 Quick Start
 
@@ -19,7 +26,7 @@ A complete and modern web dashboard for real-time monitoring of server performan
 
 ### Hardware Requirements (Optional)
 
--  Hardware sensors support (for temperature/fan monitoring, I used an esp32 with an ATH20 + BMP280) + MQ-125 gas sensor
+-  Hardware sensors support (for temperature monitoring, I used an Lilygo T-display with an ATH20 + BMP280 and a MQ-125 gas sensor; you can find the code in the `extras/code.ino` folder) 
 
 ### Installation
 
@@ -49,10 +56,11 @@ pnpm dev
 
 The application will be available at [http://localhost:3000](http://localhost:3000)
 
-## Environment Sensors Setup 
+## Environment Sensors Setup
+
 To monitor hardware sensors like temperature, humidity, and gas levels, you can use an ESP32 microcontroller with appropriate sensors (e.g., ATH20 for temperature/humidity, BMP280 for pressure, MQ-125 for gas detection).
 
-You can find the Arduino code and PlatformIO configuration in the `extras/code.ino` directory.
+You can find the Arduino code and PlatformIO configuration in the `extras/code.ino` directory for a Lilygo T-Display board.
 
 ## 🖥️ Kiosk Mode
 

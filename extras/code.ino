@@ -50,6 +50,16 @@ const unsigned long WIFI_RETRY_INTERVAL = 60000; // 60 seconds
 
 bool wifiConnected = false;
 int connectionAttempts = 0;
+bool webSocketConnected = false;
+
+// MARK: - Status Indicator State
+unsigned long lastHttpSend = 0;
+uint16_t lastHttpColor = TFT_DARKGREY;
+
+unsigned long lastWebSocketSend = 0;
+uint16_t lastWebSocketColor = TFT_DARKGREY;
+
+const unsigned long INDICATOR_ACTIVE_MS = 4000; // how long to keep indicators lit
 
 // MARK: - WebSocket Client
 WebSocketsClient webSocket;
@@ -64,9 +74,11 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
   {
   case WStype_DISCONNECTED:
     Serial.println("WebSocket Disconnected!");
+    webSocketConnected = false;
     break;
   case WStype_CONNECTED:
     Serial.println("WebSocket Connected!");
+    webSocketConnected = true;
     break;
   case WStype_TEXT:
     Serial.printf("WebSocket Message: %s\n", payload);
@@ -186,6 +198,34 @@ String formatUptime(unsigned long seconds)
   return String(buffer);
 }
 
+// MARK: - Status Icons
+void drawHttpIndicator()
+{
+  uint16_t color = (millis() - lastHttpSend <= INDICATOR_ACTIVE_MS) ? lastHttpColor : TFT_DARKGREY;
+  tft.fillCircle(230, 10, 5, color);
+}
+
+void drawWebSocketIndicator()
+{
+  uint16_t color;
+  if (!webSocketConnected)
+  {
+    color = TFT_RED;
+  }
+  else if (millis() - lastWebSocketSend <= INDICATOR_ACTIVE_MS)
+  {
+    color = lastWebSocketColor;
+  }
+  else
+  {
+    color = TFT_DARKGREY;
+  }
+
+  // Paper-plane-ish send icon
+  tft.fillTriangle(210, 6, 223, 12, 210, 18, color);
+  tft.fillRect(205, 12, 5, 2, color);
+}
+
 // MARK: - Update Display
 void updateDisplay()
 {
@@ -252,9 +292,13 @@ void updateDisplay()
 
   // Uptime
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.setCursor(150, 130);
+  tft.setCursor(10, 130);
   tft.printf("Uptime:");
   tft.print(formatUptime(millis() / 1000));
+
+  // Connection indicators (HTTP circle + WebSocket plane)
+  drawWebSocketIndicator();
+  drawHttpIndicator();
 }
 
 // MARK: - Setup
@@ -357,14 +401,19 @@ void sendDataToServer()
     if (httpResponseCode == 201)
     {
       Serial.println("Data sent successfully.");
-      tft.fillCircle(230, 10, 5, TFT_GREEN); // Indicate success
+      lastHttpColor = TFT_GREEN;
+    }
+    else
+    {
+      lastHttpColor = TFT_RED;
     }
   }
   else
   {
     Serial.printf("Error sending data. HTTP response code: %d\n", httpResponseCode);
-    tft.fillCircle(230, 10, 5, TFT_RED); // Indicate failure
+    lastHttpColor = TFT_RED;
   }
+  lastHttpSend = millis();
   http.end();
 }
 
@@ -388,10 +437,13 @@ void sendDataViaWebSocket()
     String jsonString;
     serializeJson(doc, jsonString);
 
-    webSocket.sendTXT(jsonString);
+    bool sent = webSocket.sendTXT(jsonString);
 
     Serial.println("[WS] Sent:");
     Serial.println(jsonString);
+
+    lastWebSocketColor = sent ? TFT_CYAN : TFT_RED;
+    lastWebSocketSend = millis();
   }
 }
 

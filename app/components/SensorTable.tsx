@@ -148,7 +148,7 @@ const SensorTable: FC<SensorTableProps> = ({ data, loading }) => {
                label={translations.sensorTable.airQuality}
                value={airQuality}
                unit=""
-               displayUnit=""
+               displayUnit="PPM"
                status={airQualityStatusClass}
             />
          </div>

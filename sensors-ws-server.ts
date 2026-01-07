@@ -1,22 +1,28 @@
+const debug = false;
+const PORT = 3134;
+
 import { WebSocketServer, WebSocket } from "ws";
+import Chalk from "chalk";
 
 interface ExtendedWebSocket extends WebSocket {
    isAlive?: boolean;
 }
 
-const wss = new WebSocketServer({ port: 3134 });
+const wss = new WebSocketServer({ port: PORT });
 
 wss.on("connection", (ws: ExtendedWebSocket) => {
+   ws.isAlive = true;
+
    const ip = (ws as any)._socket.remoteAddress?.replace("::ffff:", "");
 
-   console.log(`[sensor-ws] client ${ip} connected`);
+   console.log(Chalk.green(`[sensor-ws] client ${ip} connected`)) ;
 
    ws.send(JSON.stringify({ type: "ready", message: "WebSocket connected" }));
 
    ws.on("message", (raw) => {
       try {
          const payload = JSON.parse(raw.toString());
-         console.log("[sensor-ws] payload", payload);
+         if (debug) console.log(Chalk.cyan("[sensor-ws] payload"), payload);
 
          // Broadcast the new reading to any connected listeners
          wss.clients.forEach((client) => {
@@ -36,19 +42,23 @@ wss.on("connection", (ws: ExtendedWebSocket) => {
 
    ws.on("close", () => {
       const ip = (ws as any)._socket.remoteAddress?.replace("::ffff:", "");
-      console.log(`[sensor-ws] client ${ip} disconnected`);
+      console.log(Chalk.red(`[sensor-ws] client ${ip} disconnected`));
    });
 });
 
+// Heartbeat to detect and close dead connections
 setInterval(() => {
    wss.clients.forEach((ws: any) => {
-      if (!ws.isAlive) return ws.terminate();
+      if (!ws.isAlive) {
+         console.log(Chalk.yellow("[sensor-ws] terminating unresponsive client"));
+         return ws.terminate();
+      }
       ws.isAlive = false;
       ws.ping();
    });
 }, 30000);
 
-console.log("[sensor-ws] server started on port 3134");
+console.log(Chalk.blue(`[sensor-ws] server started on port ${PORT}`));
 
 wss.on("error", (error: any) => {
    console.error("[sensor-ws] server error", error);

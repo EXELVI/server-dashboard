@@ -201,7 +201,7 @@ const CpuUsage = ({ data, loadAverage, loading }: CpuUsageProps) => {
                      </defs>
                      <CartesianGrid vertical={false} />
                      <XAxis dataKey="time" tickLine={false} axisLine={false} tickMargin={8} />
-                     <YAxis min={0} max={100} tickLine={false} axisLine={false} tickMargin={8} />
+                     <YAxis min={0} max={100} tickLine={false} axisLine={false} tickMargin={8} domain={[0, 100]} />
                      <ChartTooltip cursor={false} content={<CpuTooltip indicator="dot" />} />
                      <Area dataKey="user" type="natural" fill="url(#fillUser)" stroke="var(--color-user)" stackId="a" />
                      <Area

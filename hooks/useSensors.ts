@@ -13,10 +13,11 @@ export type SensorPayload = {
 type UseSensorsParams = {
    setData: React.Dispatch<React.SetStateAction<SensorData | undefined>>;
    onDisconnect?: () => void;
+   onConnect?: () => void;
    enabled?: boolean;
 };
 
-export function useSensors({ setData, onDisconnect, enabled = true }: UseSensorsParams) {
+export function useSensors({ setData, onDisconnect, onConnect, enabled = true }: UseSensorsParams) {
    const wsRef = useRef<WebSocket | null>(null);
    const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,6 +41,7 @@ export function useSensors({ setData, onDisconnect, enabled = true }: UseSensors
 
          ws.onopen = () => {
             console.log("%c [dashboard-ws] connected", "color: green");
+            onConnect?.();
          };
 
          ws.onmessage = (event) => {
@@ -72,6 +74,7 @@ export function useSensors({ setData, onDisconnect, enabled = true }: UseSensors
          };
 
          ws.onclose = () => {
+            if (stopped) return;
             console.log("%c [dashboard-ws] disconnected", "color: red");
             console.log("%c [dashboard-ws] attempting to reconnect in 5 seconds...", "color: orange");
             onDisconnect?.();
@@ -80,6 +83,7 @@ export function useSensors({ setData, onDisconnect, enabled = true }: UseSensors
          };
 
          ws.onerror = (error) => {
+            if (stopped) return;
             console.error("[dashboard-ws] error", error);
             ws.close();
          };
@@ -95,5 +99,5 @@ export function useSensors({ setData, onDisconnect, enabled = true }: UseSensors
             wsRef.current = null;
          }
       };
-   }, [clearRetryTimeout, enabled, onDisconnect, setData]);
+   }, [clearRetryTimeout, enabled, onConnect, onDisconnect, setData]);
 }
