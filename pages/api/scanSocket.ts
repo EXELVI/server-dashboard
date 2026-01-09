@@ -35,7 +35,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                exec(`scanimage --format=png --mode Color --output-file=${filePath}`, (error, stdout, stderr) => {
                   if (error) {
                      console.error(`Error during scan: ${error.message}`);
-                     let message = {
+                     const message = {
                         status: "error",
                         error: error.message
                      };

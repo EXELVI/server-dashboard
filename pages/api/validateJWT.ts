@@ -15,7 +15,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
    try {
       const decoded = jwt.verify(token, secretKety);
       return res.status(200).json({ valid: true, decoded, message: "Token is valid" });
-   } catch (err) {
+   } catch {
       return res.status(401).json({ valid: false, error: "Invalid token" });
    }
 }

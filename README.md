@@ -1,6 +1,14 @@
 # 🖥️ Server Dashboard
 
+![Dashboard Preview](images/demo.png)
+
 A complete and modern web dashboard for real-time monitoring of server performance
+
+![Stars](https://img.shields.io/github/stars/EXELVI/server-dashboard?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/EXELVI/server-dashboard?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/EXELVI/server-dashboard?style=for-the-badge)
+![License](https://img.shields.io/github/license/EXELVI/server-dashboard?style=for-the-badge)
+![Repo Size](https://img.shields.io/github/repo-size/EXELVI/server-dashboard?style=for-the-badge)
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0.10-black?logo=next.js&style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19.2.0-blue?logo=react&style=for-the-badge)
@@ -16,19 +24,36 @@ A complete and modern web dashboard for real-time monitoring of server performan
 -  Kiosk mode for full-screen display on dedicated monitors
 -  Cache Ram usage monitoring and clearing
 
+### 🖥️ Process Monitoring 
+
+![Processes Preview](images/processes.png)
+
+View active processes on the server along with their CPU and memory usage.  
+
+### 🗒️ Logs Viewer
+
+![Logs Preview](images/logs.png)
+
+Access and view system logs directly from the dashboard.
+
+### 🖨️ Scan Feature
+![Scan Preview](images/scan.png)
+ 
+Scan documents using a connected scanner and send them via email directly from the dashboard.
+
 ## 🚀 Quick Start
 
-### Prerequisites
+### 🛠️ Prerequisites
 
 -  Node.js v24.x or higher
 -  pnpm (recommended) or npm
 -  PM2 (optional, for production deployment)
 
-### Hardware Requirements (Optional)
+### 🛠️ Hardware Requirements (Optional)
 
 -  Hardware sensors support (for temperature monitoring, I used an Lilygo T-display with an ATH20 + BMP280 and a MQ-125 gas sensor; you can find the code in the `extras/code.ino` folder) 
 
-### Installation
+### 🖥️ Installation
 
 ```bash
 # Clone the repository
@@ -56,7 +81,7 @@ pnpm dev
 
 The application will be available at [http://localhost:3000](http://localhost:3000)
 
-## Environment Sensors Setup
+## 🌡️ Environment Sensors Setup
 
 To monitor hardware sensors like temperature, humidity, and gas levels, you can use an ESP32 microcontroller with appropriate sensors (e.g., ATH20 for temperature/humidity, BMP280 for pressure, MQ-125 for gas detection).
 
@@ -69,7 +94,7 @@ Run the application in full-screen kiosk mode on a dedicated monitor, perfect fo
 > [!NOTE]
 > This setup has been tested on Ubuntu Server
 
-### Requirements
+### 🖥️ Requirements
 
 -  A monitor connected to your server
 -  Chromium or Firefox browser with kiosk mode support
@@ -238,7 +263,7 @@ HOSTNAME="your_server_hostname"
 NEXT_PUBLIC_WIFI_SSID="your_wifi_ssid"
 ```
 
-### Demo Mode
+## 🧪 Demo Mode
 
 The application supports a demo mode for testing without requiring real server data or hardware sensors. This is useful for development and testing purposes.
 
@@ -250,6 +275,8 @@ NEXT_PUBLIC_DEMO_MODE=true
 
 When enabled, the dashboard will display simulated data for all monitoring features.
 
+
+
 ## 🔌 API Endpoints
 
 ### Monitoring
@@ -260,7 +287,7 @@ When enabled, the dashboard will display simulated data for all monitoring featu
 -  `GET /api/logs` - Fetch system logs
 -  `GET /api/processes` - List active processes with resource usage
 
-### Scanner
+### 🖨️ Scanner
 
 -  `POST /api/sendMail` - Send scanned documents via email
 -  `GET /scans/[file]` - Retrieve a specific scanned file

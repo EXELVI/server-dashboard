@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       const lines = stdout.trim().split('\n')
       const data = lines[1].split(/\s+/)
 
-      var filesystem = data[0]
+      let filesystem = data[0]
       const size = data[1]
       const used = data[2]
       const avail = data[3]

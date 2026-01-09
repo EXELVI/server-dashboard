@@ -50,8 +50,10 @@ const buildDisk = (label: "system" | "storage"): DiskData => {
       size: `${toFixedStr(total, 1)}${suffix}`,
       filesystem: label === "storage" ? "/dev/sda1" : "/dev/nvme0n1p2",
       mountPoint: label === "storage" ? "/mnt/storage" : "/",
-      ioStatus: Math.random() < 0.1 ? "OK" : "ERROR",
-      health: Math.random() < 0.05 ? "GOOD" : "BAD"
+      // OK, ERROR
+      ioStatus: Math.random() < 0.9 ? "OK" : "ERROR",
+      // GOOD, BAD
+      health: Math.random() < 0.85 ? "GOOD" : "BAD"
    };
 };
 
@@ -249,6 +251,11 @@ const LOG_DETAILS: Record<LogType, { label: string; path: string; description: s
       label: "SSH server",
       path: "/var/log/auth.log",
       description: "Output of SSH server"
+   },
+   xorg: {
+      label: "X server (Xorg)",
+      path: "/var/log/Xvfb.log",
+      description: "Output of X server"
    }
 };
 
@@ -363,11 +370,35 @@ const buildSshLog = (count: number) => {
    return lines.reverse();
 };
 
+const buildXorgLog = (count: number) => {
+   const events = [
+      "X: error: BadMatch",
+      "X: error: BadWindow",
+      "X: error: BadAlloc",
+      "X: warning: XKB extension not available",
+      "X: info: Virtual core pointer",
+      "X: debug: Creating window"
+   ];
+
+   let cursor = Date.now();
+
+   const lines = Array.from({ length: count }, () => {
+      cursor -= randInt(400, 2200);
+      const date = new Date(cursor);
+      const event = randomItem(events);
+
+      return `${date.toISOString()} [xorg] ${event}`;
+   });
+
+   return lines.reverse();
+};
+
 const LOG_BUILDERS: Record<LogType, (count: number) => string[]> = {
    next: buildNextCombinedLog,
    "next-out": buildNextStdoutLog,
    "next-err": buildNextStderrLog,
-   ssh: buildSshLog
+   ssh: buildSshLog,
+   xorg: buildXorgLog
 };
 
 export const generateDemoLogData = (type: LogType) => {
@@ -375,7 +406,8 @@ export const generateDemoLogData = (type: LogType) => {
       next: 120,
       "next-out": 80,
       "next-err": 60,
-      ssh: 90
+      ssh: 90,
+      xorg: 50
    };
 
    const count = baseCount[type] ?? 60;
