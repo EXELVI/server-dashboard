@@ -66,6 +66,13 @@ export interface StatsData {
 // MARK: Logs
 export type LogType = 'next' | 'next-out' | 'next-err' | 'ssh' | 'xorg';
 
+export type LogOption = {
+   value: LogType;
+   label: string;
+   description: string;
+   path: string;
+};
+
 
 // MARK: Env Sensors
 export interface SensorReading {
@@ -105,3 +112,12 @@ export interface SensorCardProps {
    status: string;
    displayUnit: string | undefined;
 }
+
+export type ProcessInfo = {
+   pid: number;
+   ppid: number;
+   cpu: number;
+   mem: number;
+   elapsedSeconds: number;
+   command: string;
+};

@@ -13,14 +13,7 @@ import { getTranslations, getFormattedTranslation } from "@/lib/translations";
 
 const translations = getTranslations(process.env.NEXT_PUBLIC_LOCALE || undefined);
 
-type ProcessInfo = {
-   pid: number;
-   ppid: number;
-   cpu: number;
-   mem: number;
-   elapsedSeconds: number;
-   command: string;
-};
+import type { ProcessInfo } from "@/app/types.ts";
 
 type Props = {
    open: boolean;

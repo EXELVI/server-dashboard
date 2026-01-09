@@ -7,18 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { generateDemoLogData } from "../../services/demoData";
-import { LogType } from "../../types";
+import { LogType, LogOption } from "../../types";
 import { LoadingState } from "../utilities/LoadingState";
 import { getTranslations, getFormattedTranslation } from "@/lib/translations";
 
 const translations = getTranslations(process.env.NEXT_PUBLIC_LOCALE || undefined);
-
-type LogOption = {
-   value: LogType;
-   label: string;
-   description: string;
-   path: string;
-};
 
 const LOG_OPTIONS: LogOption[] = [
    {

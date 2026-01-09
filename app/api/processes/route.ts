@@ -2,14 +2,7 @@ import { NextResponse } from "next/server";
 import { exec } from "child_process";
 import { count } from "console";
 
-type ProcessInfo = {
-   pid: number;
-   ppid: number;
-   cpu: number;
-   mem: number;
-   elapsedSeconds: number;
-   command: string;
-};
+import type { ProcessInfo } from "@/app/types.ts";
 
 export async function GET() {
    return new Promise<NextResponse>((resolve) => {
