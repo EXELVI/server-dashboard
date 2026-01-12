@@ -41,6 +41,12 @@ Access and view system logs directly from the dashboard.
  
 Scan documents using a connected scanner and send them via email directly from the dashboard.
 
+## 🌐 Demo
+You can try the live demo [here](https://demos.exelvi.xyz/server-dashboard).
+
+> [!WARNING]
+> You should use a 1920x1080 resolution
+
 ## 🚀 Quick Start
 
 ### 🛠️ Prerequisites
