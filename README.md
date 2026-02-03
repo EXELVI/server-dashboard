@@ -93,6 +93,8 @@ To monitor hardware sensors like temperature, humidity, and gas levels, you can 
 
 You can find the Arduino code and PlatformIO configuration in the `extras/code.ino` directory for a Lilygo T-Display board.
 
+
+
 ## 🖥️ Kiosk Mode
 
 Run the application in full-screen kiosk mode on a dedicated monitor, perfect for server rooms or monitoring stations.
@@ -282,7 +284,6 @@ NEXT_PUBLIC_DEMO_MODE=true
 When enabled, the dashboard will display simulated data for all monitoring features.
 
 
-
 ## 🔌 API Endpoints
 
 ### Monitoring
@@ -297,6 +298,12 @@ When enabled, the dashboard will display simulated data for all monitoring featu
 
 -  `POST /api/sendMail` - Send scanned documents via email
 -  `GET /scans/[file]` - Retrieve a specific scanned file
+
+# [📋 Steps](timeline.md)
+
+# 🤖 AI Usage
+
+AI helped me with code snippets, autocompletion, debugging, bug fixes, formatting raw data and styling suggestions
 
 ## 📄 License
 
