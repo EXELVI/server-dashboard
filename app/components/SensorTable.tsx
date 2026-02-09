@@ -100,7 +100,7 @@ const SensorTable: FC<SensorTableProps> = ({ data, loading }) => {
    }
 
    const { temperature, humidity, pressure, airQuality } = data.data;
-   const { isOnline, device, lastUpdate } = data;
+   const { isOnline, device, lastUpdate, displayEnabled } = data;
    const lastUpdateDate = useMemo(() => new Date(lastUpdate), [lastUpdate]);
 
    const temperatureStatus = useMemo(
@@ -157,6 +157,12 @@ const SensorTable: FC<SensorTableProps> = ({ data, loading }) => {
             <span className="text-gray-300">{translations.sensorTable.lastUpdate}</span> {format(lastUpdateDate, "HH:mm:ss")}
             <br />
             <span className="text-gray-300">{translations.sensorTable.device}</span> {device}
+            {typeof displayEnabled === "boolean" && (
+               <>
+                  <br />
+                  <span className="text-gray-300">{translations.sensorTable.display}</span> {displayEnabled ? translations.sensorTable.displayOn : translations.sensorTable.displayOff}
+               </>
+            )}
          </div>
 
          <div className="refresh-indicator bg-accent" />

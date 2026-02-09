@@ -25,6 +25,8 @@
     "updatingData": "Ajorno i dati...",
     "dataUpdated": "Dati ajornài",
     "updateFailed": "Ajornamento falìo",
+    "displayToggleSent": "Comando display invià",
+    "displayToggleFailed": "Invio comando display falìo",
     "cards": {
       "cpu": "CPU",
       "memory": "Memòria",
@@ -36,6 +38,7 @@
   },
   "commands": {
     "scanMenu": "Menu Scansion",
+    "toggleDisplay": "Ativa/disativa display",
     "refreshData": "Ajorna i dati",
     "openLogs": "Verzi i log",
     "processes": "Processi",
@@ -97,7 +100,11 @@
     "min": "Min:",
     "max": "Max:",
     "lastUpdate": "Ultimo ajornamento:",
-    "device": "Dispozitivo:"
+    "device": "Dispozitivo:",
+    "display": "Display:",
+    "displayOn": "On",
+    "displayOff": "Off",
+    "displayUnknown": "Sconossiùo"
   },
   "logDialog": {
     "title": "Log de sistema",

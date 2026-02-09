@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SensorData } from "@/app/types";
 
 export type SensorPayload = {
@@ -6,6 +6,7 @@ export type SensorPayload = {
    humidity?: number;
    pressure?: number;
    airQuality?: number;
+   displayEnabled?: boolean;
    deviceId?: string;
    timestamp?: string;
 };
@@ -14,12 +15,18 @@ type UseSensorsParams = {
    setData: React.Dispatch<React.SetStateAction<SensorData | undefined>>;
    onDisconnect?: () => void;
    onConnect?: () => void;
-   enabled?: boolean;
+   enabled?: boolean; 
 };
 
-export function useSensors({ setData, onDisconnect, onConnect, enabled = true }: UseSensorsParams) {
+type UseSensorsResult = {
+   sendCommand: (command: string) => boolean;
+   isConnected: boolean;
+};
+
+export function useSensors({ setData, onDisconnect, onConnect, enabled = true,}: UseSensorsParams): UseSensorsResult {
    const wsRef = useRef<WebSocket | null>(null);
    const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+   const [isConnected, setIsConnected] = useState(false);
 
    const clearRetryTimeout = useCallback(() => {
       if (retryTimeoutRef.current) {
@@ -29,7 +36,10 @@ export function useSensors({ setData, onDisconnect, onConnect, enabled = true }:
    }, []);
 
    useEffect(() => {
-      if (!enabled) return;
+      if (!enabled) {
+         setIsConnected(false);
+         return;
+      }
 
       let stopped = false;
 
@@ -41,6 +51,7 @@ export function useSensors({ setData, onDisconnect, onConnect, enabled = true }:
 
          ws.onopen = () => {
             console.log("%c [dashboard-ws] connected", "color: green");
+            setIsConnected(true);
             onConnect?.();
          };
 
@@ -61,6 +72,7 @@ export function useSensors({ setData, onDisconnect, onConnect, enabled = true }:
                         pressure: payload.pressure || 0,
                         airQuality: payload.airQuality || 0,
                      },
+                     displayEnabled: typeof payload.displayEnabled === "boolean" ? payload.displayEnabled : undefined,
                      device: payload.deviceId ? `${payload.deviceId} (WS)` : "Unknown Device (WS)",
                      isOnline: true,
                      lastUpdate: payload.timestamp || new Date().toISOString(),
@@ -68,6 +80,7 @@ export function useSensors({ setData, onDisconnect, onConnect, enabled = true }:
 
                   setData(sensorData);
                }
+            
             } catch (error) {
                console.error("%c [dashboard-ws] invalid message", error);
             }
@@ -77,6 +90,7 @@ export function useSensors({ setData, onDisconnect, onConnect, enabled = true }:
             if (stopped) return;
             console.log("%c [dashboard-ws] disconnected", "color: red");
             console.log("%c [dashboard-ws] attempting to reconnect in 5 seconds...", "color: orange");
+            setIsConnected(false);
             onDisconnect?.();
             clearRetryTimeout();
             retryTimeoutRef.current = setTimeout(connect, 5000);
@@ -85,6 +99,7 @@ export function useSensors({ setData, onDisconnect, onConnect, enabled = true }:
          ws.onerror = (error) => {
             if (stopped) return;
             console.error("[dashboard-ws] error", error);
+            setIsConnected(false);
             ws.close();
          };
       };
@@ -98,6 +113,24 @@ export function useSensors({ setData, onDisconnect, onConnect, enabled = true }:
             wsRef.current.close();
             wsRef.current = null;
          }
+         setIsConnected(false);
       };
    }, [clearRetryTimeout, enabled, onConnect, onDisconnect, setData]);
+
+   const sendCommand = useCallback(
+      (command: string) => {
+         if (!enabled) return false;
+
+         const ws = wsRef.current;
+         if (!ws || ws.readyState !== WebSocket.OPEN) {
+            return false;
+         }
+
+         ws.send(JSON.stringify({ command }));
+         return true;
+      },
+      [enabled]
+   );
+
+   return { sendCommand, isConnected };
 }

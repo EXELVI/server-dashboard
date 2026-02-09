@@ -161,6 +161,7 @@ const buildSensorTable = (): SensorData => {
          pressure: roundTo(randFloat(990, 1025), 1),
          airQuality: randInt(15, 100)
       },
+      displayEnabled: Math.random() > 0.25,
       device: "demo-sensor-01",
       isOnline: Math.random() > 0.05,
       lastUpdate: now.toISOString()

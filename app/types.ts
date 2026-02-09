@@ -20,6 +20,7 @@ export interface SensorReading {
 export interface SensorData {
    success: boolean;
    data: SensorReading;
+   displayEnabled?: boolean;
    device: string;
    isOnline: boolean;
    lastUpdate: string;
@@ -85,6 +86,7 @@ export interface SensorReading {
 export interface SensorData {
    success: boolean;
    data: SensorReading;
+   displayEnabled?: boolean;
    device: string;
    isOnline: boolean;
    lastUpdate: string;

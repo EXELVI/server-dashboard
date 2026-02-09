@@ -25,6 +25,8 @@
     "updatingData": "Updating data...",
     "dataUpdated": "Data updated",
     "updateFailed": "Update failed",
+    "displayToggleSent": "Display toggle sent",
+    "displayToggleFailed": "Display toggle failed",
     "cards": {
       "cpu": "CPU",
       "memory": "Memory",
@@ -36,6 +38,7 @@
   },
   "commands": {
     "scanMenu": "Scan Menu",
+    "toggleDisplay": "Toggle display",
     "refreshData": "Refresh data",
     "openLogs": "Open logs",
     "processes": "Processes",
@@ -97,7 +100,11 @@
     "min": "Min:",
     "max": "Max:",
     "lastUpdate": "Last Update:",
-    "device": "Device:"
+    "device": "Device:",
+    "display": "Display:",
+    "displayOn": "On",
+    "displayOff": "Off",
+    "displayUnknown": "Unknown"
   },
   "logDialog": {
     "title": "System logs",

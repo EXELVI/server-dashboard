@@ -24,6 +24,16 @@ wss.on("connection", (ws: ExtendedWebSocket) => {
          const payload = JSON.parse(raw.toString());
          if (debug) console.log(Chalk.cyan("[sensor-ws] payload"), payload);
 
+         if (typeof payload?.command === "string") {
+            const commandPayload = JSON.stringify({ command: payload.command });
+            wss.clients.forEach((client) => {
+               if (client.readyState === WebSocket.OPEN) {
+                  client.send(commandPayload);
+               }
+            });
+            return;
+         }
+
          // Broadcast the new reading to any connected listeners
          wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
@@ -69,4 +79,5 @@ export interface SensorPayload {
    humidity?: number;
    pressure?: number;
    airQuality?: number;
+   displayEnabled?: boolean;
 }

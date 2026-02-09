@@ -16,6 +16,12 @@ export default function Commands() {
             </KbdGroup>
          </div>
          <div className="flex items-center justify-between">
+            <h3 className="text-sm mb-2">{translations.commands.toggleDisplay}</h3>
+            <KbdGroup>
+               <Kbd>D</Kbd>
+            </KbdGroup>
+         </div>
+         <div className="flex items-center justify-between">
             <h3 className="text-sm mb-2">{translations.commands.refreshData}</h3>
             <KbdGroup>
                <Kbd>U</Kbd>

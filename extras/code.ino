@@ -9,6 +9,8 @@
 #include <ArduinoJson.h>
 #include <WebSocketsClient.h>
 
+const bool debug = true;
+
 #define RLOAD 10.0  // MQ-135 load resistance in kilo ohms
 #define RZERO 76.63 // Average value (should be calibrated for each sensor)
 
@@ -51,6 +53,7 @@ const unsigned long WIFI_RETRY_INTERVAL = 60000; // 60 seconds
 bool wifiConnected = false;
 int connectionAttempts = 0;
 bool webSocketConnected = false;
+bool displayEnabled = true;
 
 // MARK: - Status Indicator State
 unsigned long lastHttpSend = 0;
@@ -65,7 +68,7 @@ const unsigned long INDICATOR_ACTIVE_MS = 4000; // how long to keep indicators l
 WebSocketsClient webSocket;
 
 const char *WS_HOST = "192.168.1.6"; // your dashboard server IP address
-const uint16_t WS_PORT = 3134; // match ws server port 
+const uint16_t WS_PORT = 3134;       // match ws server port
 const char *WS_PATH = "/api/socket";
 
 void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
@@ -73,15 +76,46 @@ void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
   switch (type)
   {
   case WStype_DISCONNECTED:
-    Serial.println("WebSocket Disconnected!");
+    if (debug)
+      Serial.println("WebSocket Disconnected!");
     webSocketConnected = false;
     break;
   case WStype_CONNECTED:
-    Serial.println("WebSocket Connected!");
+    if (debug)
+      Serial.println("WebSocket Connected!");
     webSocketConnected = true;
     break;
   case WStype_TEXT:
-    Serial.printf("WebSocket Message: %s\n", payload);
+    if (debug)
+      Serial.printf("WebSocket Message: %s\n", payload);
+
+    StaticJsonDocument<200> doc;
+    DeserializationError error = deserializeJson(doc, payload);
+
+    if (!error)
+    {
+      const char *command = doc["command"];
+      if (command != NULL)
+      {
+        if (debug)
+          Serial.printf("Received command: %s\n", command);
+        if (strcmp(command, "toggleDisplay") == 0)
+        {
+          displayEnabled = !displayEnabled;
+          if (debug)
+            Serial.printf("Display enabled: %s\n", displayEnabled ? "true" : "false");
+
+          tft.writecommand(displayEnabled ? TFT_DISPON : TFT_DISPOFF);
+          digitalWrite(TFT_BL, displayEnabled ? HIGH : LOW); // Control backlight as well
+        }
+      }
+      else
+      {
+        if (debug)
+          Serial.println("Message received without command field");
+      }
+    }
+
     break;
   }
 }
@@ -156,7 +190,8 @@ void readSensors()
 
   if (voltage < 0.05 || voltage > 3.2)
   {
-    Serial.println("MQ-135 voltage out of range!");
+    if (debug)
+      Serial.println("MQ-135 voltage out of range!");
     airQuality = NAN;
   }
 
@@ -164,7 +199,8 @@ void readSensors()
 
   if (rs <= 0 || isnan(rs))
   {
-    Serial.println("MQ-135 Rs invalid!");
+    if (debug)
+      Serial.println("MQ-135 Rs invalid!");
     airQuality = NAN;
   }
 
@@ -172,16 +208,18 @@ void readSensors()
   float ppm = 116.6020682 * pow(ratio, -2.769034857);
 
   airQuality = ppm;
-
-  Serial.printf("MQ-135 Raw: %d\n", raw);
-  Serial.printf("MQ-135 Voltage: %.2f V\n", voltage);
-  Serial.printf("MQ-135 Rs: %.2f kOhms\n", rs);
-  Serial.printf("MQ-135 Ratio: %.2f\n", ratio);
-  Serial.printf("MQ-135 PPM: %.2f\n", ppm);
-
+  if (debug)
+  {
+    Serial.printf("MQ-135 Raw: %d\n", raw);
+    Serial.printf("MQ-135 Voltage: %.2f V\n", voltage);
+    Serial.printf("MQ-135 Rs: %.2f kOhms\n", rs);
+    Serial.printf("MQ-135 Ratio: %.2f\n", ratio);
+    Serial.printf("MQ-135 PPM: %.2f\n", ppm);
+  }
   airQuality = ppm;
 
-  Serial.printf("Temp: %.2f C, Humidity: %.2f %%, Pressure: %.2f hPa, Air Quality: %.2f PPM\n", temperature, humidity, pressure, airQuality);
+  if (debug)
+    Serial.printf("Temp: %.2f C, Humidity: %.2f %%, Pressure: %.2f hPa, Air Quality: %.2f PPM\n", temperature, humidity, pressure, airQuality);
 
   sendDataViaWebSocket();
 }
@@ -229,6 +267,12 @@ void drawWebSocketIndicator()
 // MARK: - Update Display
 void updateDisplay()
 {
+
+  if (!displayEnabled)
+  {
+    return;
+  }
+
   tft.fillScreen(TFT_BLACK);
 
   // Header (Cyan)
@@ -310,6 +354,10 @@ void setup()
   analogReadResolution(12);
   analogSetAttenuation(ADC_11db); // fino a ~3.3V
 
+  // Setup backlight pin first
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, HIGH); // Accendi retroilluminazione
+
   tft.init();
   tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
@@ -384,23 +432,29 @@ void sendDataToServer()
   doc["humidity"] = round(humidity * 100.0) / 100.0;
   doc["pressure"] = round(pressure * 100.0) / 100.0;
   doc["airQuality"] = round(airQuality * 100.0) / 100.0;
+  doc["displayEnabled"] = displayEnabled;
 
   String jsonString;
   serializeJson(doc, jsonString);
 
-  Serial.println("Sending data to server:");
-  Serial.println(jsonString);
+  if (debug)
+  {
+    Serial.println("Sending data to server:");
+    Serial.println(jsonString);
+  }
 
   int httpResponseCode = http.POST(jsonString);
 
   if (httpResponseCode > 0)
   {
     String response = http.getString();
-    Serial.printf("Server response [%d]: %s\n", httpResponseCode, response.c_str());
+    if (debug)
+      Serial.printf("Server response [%d]: %s\n", httpResponseCode, response.c_str());
 
     if (httpResponseCode == 201)
     {
-      Serial.println("Data sent successfully.");
+      if (debug)
+        Serial.println("Data sent successfully.");
       lastHttpColor = TFT_GREEN;
     }
     else
@@ -410,7 +464,8 @@ void sendDataToServer()
   }
   else
   {
-    Serial.printf("Error sending data. HTTP response code: %d\n", httpResponseCode);
+    if (debug)
+      Serial.printf("Error sending data. HTTP response code: %d\n", httpResponseCode);
     lastHttpColor = TFT_RED;
   }
   lastHttpSend = millis();
@@ -433,14 +488,17 @@ void sendDataViaWebSocket()
     doc["humidity"] = round(humidity * 100.0) / 100.0;
     doc["pressure"] = round(pressure * 100.0) / 100.0;
     doc["airQuality"] = round(airQuality * 100.0) / 100.0;
+    doc["displayEnabled"] = displayEnabled;
 
     String jsonString;
     serializeJson(doc, jsonString);
 
     bool sent = webSocket.sendTXT(jsonString);
-
-    Serial.println("[WS] Sent:");
-    Serial.println(jsonString);
+    if (debug)
+    {
+      Serial.println("[WS] Sent:");
+      Serial.println(jsonString);
+    }
 
     lastWebSocketColor = sent ? TFT_CYAN : TFT_RED;
     lastWebSocketSend = millis();

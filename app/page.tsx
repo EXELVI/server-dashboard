@@ -18,6 +18,7 @@ import { LogDialog } from "./components/modals/LogDialog";
 import { ProcessDialog } from "./components/modals/ProcessDialog";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 //Scanner
 import { Toaster, toast } from "sonner";
@@ -82,12 +83,35 @@ export default function App() {
       fetchSensorFallback();
    }, [fetchSensorFallback]);
 
-   useSensors({
+   const { sendCommand: sendSensorCommand, isConnected: isSensorConnected } = useSensors({
       setData: handleSensorData,
       onConnect: handleSensorConnect,
       onDisconnect: handleSensorDisconnect,
       enabled: !demoMode,
    });
+
+   const displayEnabled = sensorTableData?.displayEnabled;
+   const displayLabel = displayEnabled === undefined
+      ? translations.sensorTable.displayUnknown
+      : displayEnabled
+         ? translations.sensorTable.displayOn
+         : translations.sensorTable.displayOff;
+
+   const handleToggleDisplay = useCallback(() => {
+      if (demoMode) {
+         setSensorTableData((prev) => (prev ? { ...prev, displayEnabled: !prev.displayEnabled } : prev));
+         return;
+      }
+
+      const didSend = sendSensorCommand("toggleDisplay");
+      if (!didSend) {
+         toast.error(translations.page.displayToggleFailed);
+         return;
+      }
+
+      setSensorTableData((prev) => (prev ? { ...prev, displayEnabled: !prev.displayEnabled } : prev));
+      toast.success(translations.page.displayToggleSent);
+   }, [demoMode, sendSensorCommand, translations.page.displayToggleFailed, translations.page.displayToggleSent]);
 
    // MARK: - Data Fetching
    const updateData = useCallback(async () => {
@@ -184,6 +208,12 @@ export default function App() {
             }
          }
 
+            // Toggle sensor display with "D" key
+            if (key === "d") {
+               e.preventDefault();
+               handleToggleDisplay();
+            }
+
          // Open logs dialog with "G" key
          if (key === "g") {
             e.preventDefault();
@@ -210,7 +240,7 @@ export default function App() {
          window.removeEventListener("keydown", handleKeyDown);
          window.removeEventListener("keyup", handleKeyUp);
       };
-   }, [updateData, handleClearCache]);
+   }, [updateData, handleClearCache, handleToggleDisplay]);
 
    // MARK: - Render
    if (loading) {
@@ -318,11 +348,13 @@ export default function App() {
                      </Card>
 
                      <Card className="overflow-hidden">
-                                <CardHeader className="flex items-center justify-between">
-                              <div className="flex items-center justify-between w-full">
-                                <CardTitle>{translations.page.cards.envSensors}</CardTitle>
-                                <OnlineStatus isOnline={sensorTableData?.isOnline || false} />
+                        <CardHeader className="flex items-center justify-between">
+                           <div className="flex items-center justify-between w-full gap-2">
+                              <CardTitle>{translations.page.cards.envSensors}</CardTitle>
+                              <div className="flex items-center gap-2">
+                                 <OnlineStatus isOnline={sensorTableData?.isOnline || false} />
                               </div>
+                           </div>
                         </CardHeader>
                         <CardContent>
                            {/* keep existing SensorTable component which renders a table */}
